@@ -1,10 +1,9 @@
 syntax = "proto3";
-package cometbft.blocksync;
+package cometbft.blockchain.v1;
 
-option go_package = "github.com/cometbft/cometbft/proto/cometbft/blocksync";
+option go_package = "github.com/cometbft/cometbft/proto/cometbft/blockchain/v1";
 
-import "cometbft/types/block.proto";
-import "cometbft/types/types.proto";
+import "cometbft/types/v1/block.proto";
 
 // BlockRequest requests a block for a specific height
 message BlockRequest {
@@ -18,8 +17,7 @@ message NoBlockResponse {
 
 // BlockResponse returns block to the requested
 message BlockResponse {
-  cometbft.types.Block          block      = 1;
-  cometbft.types.ExtendedCommit ext_commit = 2;
+  cometbft.types.v1.Block block = 1;
 }
 
 // StatusRequest requests the status of a peer.
