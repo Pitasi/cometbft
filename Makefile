@@ -126,7 +126,7 @@ endif
 
 proto-gen: check-proto-deps
 	@echo "Generating Protobuf files"
-	@go run github.com/bufbuild/buf/cmd/buf generate
+	@go run github.com/bufbuild/buf/cmd/buf generate --path proto/cometbft
 	@for v in v1 v2 v3; do mkdir -p ./abci/types/$$v; mv ./proto/cometbft/abci/$$v/types.pb.go ./abci/types/$$v/; done
 	@for v in v1 v2 v3; do mkdir -p ./rpc/grpc/$$v; cp ./proto/cometbft/rpc/grpc/$$v/types.pb.go ./rpc/grpc/$$v/; done
 .PHONY: proto-gen
