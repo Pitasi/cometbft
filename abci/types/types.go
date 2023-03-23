@@ -88,7 +88,6 @@ type ExtendedCommitInfo = v3.ExtendedCommitInfo
 type Event = v2.Event
 type EventAttribute = v2.EventAttribute
 type Misbehavior = v2.Misbehavior
-type MisbehaviorType = v2.MisbehaviorType
 type Snapshot = v1.Snapshot
 type TxResult = v3.TxResult
 type Validator = v1.Validator
@@ -99,6 +98,15 @@ type ABCIClient = v3.ABCIClient
 func NewABCIClient(cc grpc.ClientConn) ABCIClient {
 	return v3.NewABCIClient(cc)
 }
+
+type CheckTxType = v1.CheckTxType
+
+const (
+	CheckTxType_New     CheckTxType = v1.CheckTxType_New
+	CheckTxType_Recheck CheckTxType = v1.CheckTxType_Recheck
+)
+
+type MisbehaviorType = v2.MisbehaviorType
 
 const (
 	MisbehaviorType_UNKNOWN             MisbehaviorType = v2.MisbehaviorType_UNKNOWN
