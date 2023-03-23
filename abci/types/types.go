@@ -83,8 +83,10 @@ type Response_ExtendVote = v3.Response_ExtendVote
 type Response_VerifyVoteExtension = v3.Response_VerifyVoteExtension
 type Response_FinalizeBlock = v3.Response_FinalizeBlock
 
+type CommitInfo = v2.CommitInfo
 type ExecTxResult = v3.ExecTxResult
 type ExtendedCommitInfo = v3.ExtendedCommitInfo
+type ExtendedVoteInfo = v3.ExtendedVoteInfo
 type Event = v2.Event
 type EventAttribute = v2.EventAttribute
 type Misbehavior = v2.Misbehavior
@@ -92,6 +94,7 @@ type Snapshot = v1.Snapshot
 type TxResult = v3.TxResult
 type Validator = v1.Validator
 type ValidatorUpdate = v1.ValidatorUpdate
+type VoteInfo = v1.VoteInfo
 
 type ABCIClient = v3.ABCIClient
 
