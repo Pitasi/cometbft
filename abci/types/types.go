@@ -84,10 +84,12 @@ type Response_VerifyVoteExtension = v3.Response_VerifyVoteExtension
 type Response_FinalizeBlock = v3.Response_FinalizeBlock
 
 type ExecTxResult = v3.ExecTxResult
+type ExtendedCommitInfo = v2.ExtendedCommitInfo
 type Event = v2.Event
 type EventAttribute = v2.EventAttribute
 type Misbehavior = v2.Misbehavior
 type MisbehaviorType = v2.MisbehaviorType
+type Snapshot = v1.Snapshot
 type TxResult = v3.TxResult
 type Validator = v1.Validator
 type ValidatorUpdate = v1.ValidatorUpdate
@@ -102,6 +104,28 @@ const (
 	MisbehaviorType_UNKNOWN             MisbehaviorType = v2.MisbehaviorType_UNKNOWN
 	MisbehaviorType_DUPLICATE_VOTE      MisbehaviorType = v2.MisbehaviorType_DUPLICATE_VOTE
 	MisbehaviorType_LIGHT_CLIENT_ATTACK MisbehaviorType = v2.MisbehaviorType_LIGHT_CLIENT_ATTACK
+)
+
+type ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_Result
+
+const (
+	ResponseApplySnapshotChunk_UNKNOWN         ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_UNKNOWN
+	ResponseApplySnapshotChunk_ACCEPT          ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_ACCEPT
+	ResponseApplySnapshotChunk_ABORT           ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_ABORT
+	ResponseApplySnapshotChunk_RETRY           ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_RETRY
+	ResponseApplySnapshotChunk_RETRY_SNAPSHOT  ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_RETRY_SNAPSHOT
+	ResponseApplySnapshotChunk_REJECT_SNAPSHOT ResponseApplySnapshotChunk_Result = v1.ResponseApplySnapshotChunk_REJECT_SNAPSHOT
+)
+
+type ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_Result
+
+const (
+	ResponseOfferSnapshot_UNKNOWN       ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_UNKNOWN
+	ResponseOfferSnapshot_ACCEPT        ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_ACCEPT
+	ResponseOfferSnapshot_ABORT         ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_ABORT
+	ResponseOfferSnapshot_REJECT        ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_REJECT
+	ResponseOfferSnapshot_REJECT_FORMAT ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_REJECT_FORMAT
+	ResponseOfferSnapshot_REJECT_SENDER ResponseOfferSnapshot_Result = v1.ResponseOfferSnapshot_REJECT_SENDER
 )
 
 type ResponseProcessProposal_ProposalStatus = v2.ResponseProcessProposal_ProposalStatus
