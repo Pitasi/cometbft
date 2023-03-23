@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 
 	cmtstate "github.com/cometbft/cometbft/proto/cometbft/state/v3"
+	cmtstate1 "github.com/cometbft/cometbft/proto/cometbft/state/v1"
 	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
 	"github.com/cometbft/cometbft/types"
 	cmttime "github.com/cometbft/cometbft/types/time"
@@ -27,7 +28,7 @@ var (
 // but leaves the Consensus.App version blank.
 // The Consensus.App version will be set during the Handshake, once
 // we hear from the app what protocol version it is running.
-var InitStateVersion = cmtstate.Version{
+var InitStateVersion = cmtstate1.Version{
 	Consensus: cmtversion.Consensus{
 		Block: version.BlockProtocol,
 		App:   0,
@@ -45,7 +46,7 @@ var InitStateVersion = cmtstate.Version{
 // Instead, use state.Copy() or state.NextState(...).
 // NOTE: not goroutine-safe.
 type State struct {
-	Version cmtstate.Version
+	Version cmtstate1.Version
 
 	// immutable
 	ChainID       string

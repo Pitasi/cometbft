@@ -12,6 +12,8 @@ import (
 	cmtmath "github.com/cometbft/cometbft/libs/math"
 	cmtos "github.com/cometbft/cometbft/libs/os"
 	cmtstate "github.com/cometbft/cometbft/proto/cometbft/state/v3"
+	cmtstate1 "github.com/cometbft/cometbft/proto/cometbft/state/v1"
+	cmtstate2 "github.com/cometbft/cometbft/proto/cometbft/state/v2"
 	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	"github.com/cometbft/cometbft/types"
 )
@@ -397,7 +399,7 @@ func (store dbStore) LoadFinalizeBlockResponse(height int64) (*abci.ResponseFina
 	if err != nil {
 		// The data might be of the legacy ABCI response type, so
 		// we try to unmarshal that
-		legacyResp := new(cmtstate.LegacyABCIResponses)
+		legacyResp := new(cmtstate2.ABCIResponses)
 		rerr := legacyResp.Unmarshal(buf)
 		if rerr != nil {
 			// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
@@ -549,7 +551,7 @@ func lastStoredHeightFor(height, lastHeightChanged int64) int64 {
 }
 
 // CONTRACT: Returned ValidatorsInfo can be mutated.
-func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {
+func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate1.ValidatorsInfo, error) {
 	buf, err := db.Get(calcValidatorsKey(height))
 	if err != nil {
 		return nil, err
@@ -559,7 +561,7 @@ func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, erro
 		return nil, errors.New("value retrieved from db is empty")
 	}
 
-	v := new(cmtstate.ValidatorsInfo)
+	v := new(cmtstate1.ValidatorsInfo)
 	err = v.Unmarshal(buf)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
@@ -580,7 +582,7 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than ValidatorsInfo height")
 	}
-	valInfo := &cmtstate.ValidatorsInfo{
+	valInfo := &cmtstate1.ValidatorsInfo{
 		LastHeightChanged: lastHeightChanged,
 	}
 	// Only persist validator set if it was updated or checkpoint height (see
@@ -696,7 +698,7 @@ func min(a int64, b int64) int64 {
 
 // responseFinalizeBlockFromLegacy is a convenience function that takes the old abci responses and morphs
 // it to the finalize block response. Note that the app hash is missing
-func responseFinalizeBlockFromLegacy(legacyResp *cmtstate.LegacyABCIResponses) *abci.ResponseFinalizeBlock {
+func responseFinalizeBlockFromLegacy(legacyResp *cmtstate2.ABCIResponses) *abci.ResponseFinalizeBlock {
 	return &abci.ResponseFinalizeBlock{
 		TxResults:             legacyResp.DeliverTxs,
 		ValidatorUpdates:      legacyResp.EndBlock.ValidatorUpdates,
