@@ -22,7 +22,7 @@ type RequestOfferSnapshot = v1.RequestOfferSnapshot
 type RequestLoadSnapshotChunk = v1.RequestLoadSnapshotChunk
 type RequestApplySnapshotChunk = v1.RequestApplySnapshotChunk
 type RequestPrepareProposal = v3.RequestPrepareProposal
-type RequestProcessProposal = v2.RequestProcessProposal
+type RequestProcessProposal = v3.RequestProcessProposal
 type RequestExtendVote = v3.RequestExtendVote
 type RequestVerifyVoteExtension = v3.RequestVerifyVoteExtension
 type RequestFinalizeBlock = v3.RequestFinalizeBlock
@@ -83,7 +83,7 @@ type Response_ExtendVote = v3.Response_ExtendVote
 type Response_VerifyVoteExtension = v3.Response_VerifyVoteExtension
 type Response_FinalizeBlock = v3.Response_FinalizeBlock
 
-type CommitInfo = v2.CommitInfo
+type CommitInfo = v3.CommitInfo
 type ExecTxResult = v3.ExecTxResult
 type ExtendedCommitInfo = v3.ExtendedCommitInfo
 type ExtendedVoteInfo = v3.ExtendedVoteInfo
@@ -94,7 +94,7 @@ type Snapshot = v1.Snapshot
 type TxResult = v3.TxResult
 type Validator = v1.Validator
 type ValidatorUpdate = v1.ValidatorUpdate
-type VoteInfo = v1.VoteInfo
+type VoteInfo = v3.VoteInfo
 
 type ABCIClient = v3.ABCIClient
 

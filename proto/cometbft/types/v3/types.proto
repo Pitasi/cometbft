@@ -4,6 +4,7 @@ package cometbft.types.v3;
 option go_package = "github.com/cometbft/cometbft/proto/cometbft/types/v3";
 
 import "cometbft/types/v1/types.proto";
+import "cometbft/types/v3/validator.proto";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -44,7 +45,7 @@ message ExtendedCommit {
 // extension-related fields. We use two signatures to ensure backwards compatibility.
 // That is the digest of the original signature is still the same in prior versions
 message ExtendedCommitSig {
-  v1.BlockIDFlag            block_id_flag     = 1;
+  cometbft.types.v3.BlockIDFlag block_id_flag     = 1;
   bytes                     validator_address = 2;
   google.protobuf.Timestamp timestamp         = 3
       [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];

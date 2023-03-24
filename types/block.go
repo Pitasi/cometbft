@@ -808,7 +808,7 @@ func (ecs *ExtendedCommitSig) ToProto() *cmtproto.ExtendedCommitSig {
 	}
 
 	return &cmtproto.ExtendedCommitSig{
-		BlockIdFlag:        cmtproto1.BlockIDFlag(ecs.BlockIDFlag),
+		BlockIdFlag:        cmtproto.BlockIDFlag(ecs.BlockIDFlag),
 		ValidatorAddress:   ecs.ValidatorAddress,
 		Timestamp:          ecs.Timestamp,
 		Signature:          ecs.Signature,
