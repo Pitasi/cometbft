@@ -13,7 +13,6 @@ import (
 	cmtos "github.com/cometbft/cometbft/libs/os"
 	cmtstate "github.com/cometbft/cometbft/proto/cometbft/state/v3"
 	cmtstate1 "github.com/cometbft/cometbft/proto/cometbft/state/v1"
-	cmtstate2 "github.com/cometbft/cometbft/proto/cometbft/state/v2"
 	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	"github.com/cometbft/cometbft/types"
 )
@@ -399,7 +398,7 @@ func (store dbStore) LoadFinalizeBlockResponse(height int64) (*abci.ResponseFina
 	if err != nil {
 		// The data might be of the legacy ABCI response type, so
 		// we try to unmarshal that
-		legacyResp := new(cmtstate2.ABCIResponses)
+		legacyResp := new(cmtstate.LegacyABCIResponses)
 		rerr := legacyResp.Unmarshal(buf)
 		if rerr != nil {
 			// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
@@ -698,7 +697,7 @@ func min(a int64, b int64) int64 {
 
 // responseFinalizeBlockFromLegacy is a convenience function that takes the old abci responses and morphs
 // it to the finalize block response. Note that the app hash is missing
-func responseFinalizeBlockFromLegacy(legacyResp *cmtstate2.ABCIResponses) *abci.ResponseFinalizeBlock {
+func responseFinalizeBlockFromLegacy(legacyResp *cmtstate.LegacyABCIResponses) *abci.ResponseFinalizeBlock {
 	return &abci.ResponseFinalizeBlock{
 		TxResults:             legacyResp.DeliverTxs,
 		ValidatorUpdates:      legacyResp.EndBlock.ValidatorUpdates,
