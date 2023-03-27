@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 
 	bcproto "github.com/cometbft/cometbft/proto/cometbft/blocksync/v2"
+	bcproto1 "github.com/cometbft/cometbft/proto/cometbft/blocksync/v1"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -26,7 +27,7 @@ func ValidateMsg(pb proto.Message) error {
 	}
 
 	switch msg := pb.(type) {
-	case *bcproto.BlockRequest:
+	case *bcproto1.BlockRequest:
 		if msg.Height < 0 {
 			return errors.New("negative Height")
 		}
@@ -35,11 +36,11 @@ func ValidateMsg(pb proto.Message) error {
 		if err != nil {
 			return err
 		}
-	case *bcproto.NoBlockResponse:
+	case *bcproto1.NoBlockResponse:
 		if msg.Height < 0 {
 			return errors.New("negative Height")
 		}
-	case *bcproto.StatusResponse:
+	case *bcproto1.StatusResponse:
 		if msg.Base < 0 {
 			return errors.New("negative Base")
 		}
@@ -49,7 +50,7 @@ func ValidateMsg(pb proto.Message) error {
 		if msg.Base > msg.Height {
 			return fmt.Errorf("base %v cannot be greater than height %v", msg.Base, msg.Height)
 		}
-	case *bcproto.StatusRequest:
+	case *bcproto1.StatusRequest:
 		return nil
 	default:
 		return fmt.Errorf("unknown message type %T", msg)

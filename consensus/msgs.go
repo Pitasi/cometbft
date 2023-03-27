@@ -11,7 +11,8 @@ import (
 	cmtmath "github.com/cometbft/cometbft/libs/math"
 	"github.com/cometbft/cometbft/p2p"
 	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtcons1 "github.com/cometbft/cometbft/proto/cometbft/consensus/v1"
+	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v1"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -26,7 +27,7 @@ func MsgToProto(msg Message) (proto.Message, error) {
 
 	switch msg := msg.(type) {
 	case *NewRoundStepMessage:
-		pb = &cmtcons.NewRoundStep{
+		pb = &cmtcons1.NewRoundStep{
 			Height:                msg.Height,
 			Round:                 msg.Round,
 			Step:                  uint32(msg.Step),
@@ -37,7 +38,7 @@ func MsgToProto(msg Message) (proto.Message, error) {
 	case *NewValidBlockMessage:
 		pbPartSetHeader := msg.BlockPartSetHeader.ToProto()
 		pbBits := msg.BlockParts.ToProto()
-		pb = &cmtcons.NewValidBlock{
+		pb = &cmtcons1.NewValidBlock{
 			Height:             msg.Height,
 			Round:              msg.Round,
 			BlockPartSetHeader: pbPartSetHeader,
@@ -47,13 +48,13 @@ func MsgToProto(msg Message) (proto.Message, error) {
 
 	case *ProposalMessage:
 		pbP := msg.Proposal.ToProto()
-		pb = &cmtcons.Proposal{
+		pb = &cmtcons1.Proposal{
 			Proposal: *pbP,
 		}
 
 	case *ProposalPOLMessage:
 		pbBits := msg.ProposalPOL.ToProto()
-		pb = &cmtcons.ProposalPOL{
+		pb = &cmtcons1.ProposalPOL{
 			Height:           msg.Height,
 			ProposalPolRound: msg.ProposalPOLRound,
 			ProposalPol:      *pbBits,
@@ -64,7 +65,7 @@ func MsgToProto(msg Message) (proto.Message, error) {
 		if err != nil {
 			return nil, fmt.Errorf("msg to proto error: %w", err)
 		}
-		pb = &cmtcons.BlockPart{
+		pb = &cmtcons1.BlockPart{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Part:   *parts,
@@ -77,7 +78,7 @@ func MsgToProto(msg Message) (proto.Message, error) {
 		}
 
 	case *HasVoteMessage:
-		pb = &cmtcons.HasVote{
+		pb = &cmtcons1.HasVote{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Type:   msg.Type,
@@ -86,7 +87,7 @@ func MsgToProto(msg Message) (proto.Message, error) {
 
 	case *VoteSetMaj23Message:
 		bi := msg.BlockID.ToProto()
-		pb = &cmtcons.VoteSetMaj23{
+		pb = &cmtcons1.VoteSetMaj23{
 			Height:  msg.Height,
 			Round:   msg.Round,
 			Type:    msg.Type,
@@ -97,7 +98,7 @@ func MsgToProto(msg Message) (proto.Message, error) {
 		bi := msg.BlockID.ToProto()
 		bits := msg.Votes.ToProto()
 
-		vsb := &cmtcons.VoteSetBits{
+		vsb := &cmtcons1.VoteSetBits{
 			Height:  msg.Height,
 			Round:   msg.Round,
 			Type:    msg.Type,
@@ -125,7 +126,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 	var pb Message
 
 	switch msg := p.(type) {
-	case *cmtcons.NewRoundStep:
+	case *cmtcons1.NewRoundStep:
 		rs, err := cmtmath.SafeConvertUint8(int64(msg.Step))
 		// deny message based on possible overflow
 		if err != nil {
@@ -138,7 +139,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			SecondsSinceStartTime: msg.SecondsSinceStartTime,
 			LastCommitRound:       msg.LastCommitRound,
 		}
-	case *cmtcons.NewValidBlock:
+	case *cmtcons1.NewValidBlock:
 		pbPartSetHeader, err := types.PartSetHeaderFromProto(&msg.BlockPartSetHeader)
 		if err != nil {
 			return nil, fmt.Errorf("parts to proto error: %w", err)
@@ -154,7 +155,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			BlockParts:         pbBits,
 			IsCommit:           msg.IsCommit,
 		}
-	case *cmtcons.Proposal:
+	case *cmtcons1.Proposal:
 		pbP, err := types.ProposalFromProto(&msg.Proposal)
 		if err != nil {
 			return nil, fmt.Errorf("proposal msg to proto error: %w", err)
@@ -163,7 +164,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 		pb = &ProposalMessage{
 			Proposal: pbP,
 		}
-	case *cmtcons.ProposalPOL:
+	case *cmtcons1.ProposalPOL:
 		pbBits := new(bits.BitArray)
 		pbBits.FromProto(&msg.ProposalPol)
 		pb = &ProposalPOLMessage{
@@ -171,7 +172,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			ProposalPOLRound: msg.ProposalPolRound,
 			ProposalPOL:      pbBits,
 		}
-	case *cmtcons.BlockPart:
+	case *cmtcons1.BlockPart:
 		parts, err := types.PartFromProto(&msg.Part)
 		if err != nil {
 			return nil, fmt.Errorf("blockpart msg to proto error: %w", err)
@@ -192,14 +193,14 @@ func MsgFromProto(p proto.Message) (Message, error) {
 		pb = &VoteMessage{
 			Vote: vote,
 		}
-	case *cmtcons.HasVote:
+	case *cmtcons1.HasVote:
 		pb = &HasVoteMessage{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Type:   msg.Type,
 			Index:  msg.Index,
 		}
-	case *cmtcons.VoteSetMaj23:
+	case *cmtcons1.VoteSetMaj23:
 		bi, err := types.BlockIDFromProto(&msg.BlockID)
 		if err != nil {
 			return nil, fmt.Errorf("voteSetMaj23 msg to proto error: %w", err)
@@ -210,7 +211,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			Type:    msg.Type,
 			BlockID: *bi,
 		}
-	case *cmtcons.VoteSetBits:
+	case *cmtcons1.VoteSetBits:
 		bi, err := types.BlockIDFromProto(&msg.BlockID)
 		if err != nil {
 			return nil, fmt.Errorf("voteSetBits msg to proto error: %w", err)
@@ -271,7 +272,7 @@ func WALToProto(msg WALMessage) (*cmtcons.WALMessage, error) {
 	case timeoutInfo:
 		pb = cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_TimeoutInfo{
-				TimeoutInfo: &cmtcons.TimeoutInfo{
+				TimeoutInfo: &cmtcons1.TimeoutInfo{
 					Duration: msg.Duration,
 					Height:   msg.Height,
 					Round:    msg.Round,
@@ -282,7 +283,7 @@ func WALToProto(msg WALMessage) (*cmtcons.WALMessage, error) {
 	case EndHeightMessage:
 		pb = cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_EndHeight{
-				EndHeight: &cmtcons.EndHeight{
+				EndHeight: &cmtcons1.EndHeight{
 					Height: msg.Height,
 				},
 			},
