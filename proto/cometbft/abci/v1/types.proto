@@ -9,7 +9,6 @@ import "cometbft/crypto/v1/proof.proto";
 import "cometbft/types/v1/types.proto";
 import "cometbft/crypto/v1/keys.proto";
 import "cometbft/types/v1/params.proto";
-import "cometbft/types/v1/validator.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 

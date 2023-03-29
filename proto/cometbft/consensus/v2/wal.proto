@@ -9,7 +9,6 @@ import "cometbft/consensus/v2/types.proto";
 import "cometbft/types/v1/events.proto";
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 // MsgInfo are msgs from the reactor which may update the state

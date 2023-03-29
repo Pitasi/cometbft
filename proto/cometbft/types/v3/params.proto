@@ -6,7 +6,6 @@ option go_package = "github.com/cometbft/cometbft/proto/cometbft/types/v3";
 import "cometbft/types/v1/params.proto";
 import "cometbft/types/v2/params.proto";
 import "gogoproto/gogo.proto";
-import "google/protobuf/duration.proto";
 
 option (gogoproto.equal_all) = true;
 
