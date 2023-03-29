@@ -21,7 +21,14 @@ import "google/protobuf/timestamp.proto";
 message LegacyABCIResponses {
   repeated cometbft.abci.v3.ExecTxResult  deliver_txs = 1;
   ResponseEndBlock                        end_block   = 2;
-  cometbft.abci.v2.ResponseBeginBlock     begin_block = 3;
+  ResponseBeginBlock                      begin_block = 3;
+}
+
+// ResponseBeginBlock is kept for backward compatibility for versions prior to v0.38,
+// as it was then defined in the cometbft.abci packages.
+message ResponseBeginBlock {
+  repeated cometbft.abci.v2.Event events = 1
+      [(gogoproto.nullable) = false, (gogoproto.jsontag) = "events,omitempty"];
 }
 
 // ResponseEndBlock is kept for backward compatibility for versions prior to v0.38,
