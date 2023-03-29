@@ -97,9 +97,14 @@ type ValidatorUpdate = v1.ValidatorUpdate
 type VoteInfo = v3.VoteInfo
 
 type ABCIClient = v3.ABCIClient
+type ABCIServer = v3.ABCIServer
 
 func NewABCIClient(cc grpc.ClientConn) ABCIClient {
 	return v3.NewABCIClient(cc)
+}
+
+func RegisterABCIServer(s grpc.Server, srv ABCIServer) {
+	v3.RegisterABCIServer(s, srv)
 }
 
 type CheckTxType = v1.CheckTxType
