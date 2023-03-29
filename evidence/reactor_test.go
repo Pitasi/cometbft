@@ -356,7 +356,7 @@ func exampleVote(t byte) *types.Vote {
 	}
 
 	return &types.Vote{
-		Type:      cmtproto.SignedMsgType(t),
+		Type:      types.SignedMsgType(t),
 		Height:    3,
 		Round:     2,
 		Timestamp: stamp,

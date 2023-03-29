@@ -15,7 +15,8 @@ import (
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cometbft/cometbft/p2p"
 	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtcons1 "github.com/cometbft/cometbft/proto/cometbft/consensus/v1"
+	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v1"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -47,7 +48,7 @@ func TestMsgToProto(t *testing.T) {
 	require.NoError(t, err)
 
 	proposal := types.Proposal{
-		Type:      cmtproto.ProposalType,
+		Type:      types.SignedMsgType_PROPOSAL,
 		Height:    1,
 		Round:     1,
 		POLRound:  1,
@@ -64,7 +65,7 @@ func TestMsgToProto(t *testing.T) {
 		0,
 		1,
 		0,
-		cmtproto.PrecommitType,
+		types.SignedMsgType_PRECOMMIT,
 		bi,
 		time.Now(),
 	)
@@ -82,7 +83,7 @@ func TestMsgToProto(t *testing.T) {
 			Step:                  1,
 			SecondsSinceStartTime: 1,
 			LastCommitRound:       2,
-		}, &cmtcons.NewRoundStep{
+		}, &cmtcons1.NewRoundStep{
 			Height:                2,
 			Round:                 1,
 			Step:                  1,
@@ -98,7 +99,7 @@ func TestMsgToProto(t *testing.T) {
 			BlockPartSetHeader: psh,
 			BlockParts:         bits,
 			IsCommit:           false,
-		}, &cmtcons.NewValidBlock{
+		}, &cmtcons1.NewValidBlock{
 			Height:             1,
 			Round:              1,
 			BlockPartSetHeader: pbPsh,
@@ -111,7 +112,7 @@ func TestMsgToProto(t *testing.T) {
 			Height: 100,
 			Round:  1,
 			Part:   &parts,
-		}, &cmtcons.BlockPart{
+		}, &cmtcons1.BlockPart{
 			Height: 100,
 			Round:  1,
 			Part:   *pbParts,
@@ -122,7 +123,7 @@ func TestMsgToProto(t *testing.T) {
 			Height:           1,
 			ProposalPOLRound: 1,
 			ProposalPOL:      bits,
-		}, &cmtcons.ProposalPOL{
+		}, &cmtcons1.ProposalPOL{
 			Height:           1,
 			ProposalPolRound: 1,
 			ProposalPol:      *pbBits,
@@ -130,7 +131,7 @@ func TestMsgToProto(t *testing.T) {
 			false},
 		{"successful ProposalMessage", &ProposalMessage{
 			Proposal: &proposal,
-		}, &cmtcons.Proposal{
+		}, &cmtcons1.Proposal{
 			Proposal: *pbProposal,
 		},
 
@@ -147,7 +148,7 @@ func TestMsgToProto(t *testing.T) {
 			Round:   1,
 			Type:    1,
 			BlockID: bi,
-		}, &cmtcons.VoteSetMaj23{
+		}, &cmtcons1.VoteSetMaj23{
 			Height:  1,
 			Round:   1,
 			Type:    1,
@@ -161,7 +162,7 @@ func TestMsgToProto(t *testing.T) {
 			Type:    1,
 			BlockID: bi,
 			Votes:   bits,
-		}, &cmtcons.VoteSetBits{
+		}, &cmtcons1.VoteSetBits{
 			Height:  1,
 			Round:   1,
 			Type:    1,
@@ -241,7 +242,7 @@ func TestWALMsgProto(t *testing.T) {
 				MsgInfo: &cmtcons.MsgInfo{
 					Msg: cmtcons.Message{
 						Sum: &cmtcons.Message_BlockPart{
-							BlockPart: &cmtcons.BlockPart{
+							BlockPart: &cmtcons1.BlockPart{
 								Height: 100,
 								Round:  1,
 								Part:   *pbParts,
@@ -259,7 +260,7 @@ func TestWALMsgProto(t *testing.T) {
 			Step:     1,
 		}, &cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_TimeoutInfo{
-				TimeoutInfo: &cmtcons.TimeoutInfo{
+				TimeoutInfo: &cmtcons1.TimeoutInfo{
 					Duration: time.Duration(100),
 					Height:   1,
 					Round:    1,
@@ -271,7 +272,7 @@ func TestWALMsgProto(t *testing.T) {
 			Height: 1,
 		}, &cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_EndHeight{
-				EndHeight: &cmtcons.EndHeight{
+				EndHeight: &cmtcons1.EndHeight{
 					Height: 1,
 				},
 			},
@@ -331,7 +332,7 @@ func TestConsMsgsVectors(t *testing.T) {
 	require.NoError(t, err)
 
 	proposal := types.Proposal{
-		Type:      cmtproto.ProposalType,
+		Type:      types.SignedMsgType_PROPOSAL,
 		Height:    1,
 		Round:     1,
 		POLRound:  1,
@@ -347,7 +348,7 @@ func TestConsMsgsVectors(t *testing.T) {
 		Height:           1,
 		Round:            0,
 		Timestamp:        date,
-		Type:             cmtproto.PrecommitType,
+		Type:             types.SignedMsgType_PRECOMMIT,
 		BlockID:          bi,
 	}
 	vpb := v.ToProto()
@@ -359,14 +360,14 @@ func TestConsMsgsVectors(t *testing.T) {
 		cMsg     proto.Message
 		expBytes string
 	}{
-		{"NewRoundStep", &cmtcons.Message{Sum: &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons.NewRoundStep{
+		{"NewRoundStep", &cmtcons.Message{Sum: &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons1.NewRoundStep{
 			Height:                1,
 			Round:                 1,
 			Step:                  1,
 			SecondsSinceStartTime: 1,
 			LastCommitRound:       1,
 		}}}, "0a0a08011001180120012801"},
-		{"NewRoundStep Max", &cmtcons.Message{Sum: &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons.NewRoundStep{
+		{"NewRoundStep Max", &cmtcons.Message{Sum: &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons1.NewRoundStep{
 			Height:                math.MaxInt64,
 			Round:                 math.MaxInt32,
 			Step:                  math.MaxUint32,
@@ -374,16 +375,16 @@ func TestConsMsgsVectors(t *testing.T) {
 			LastCommitRound:       math.MaxInt32,
 		}}}, "0a2608ffffffffffffffff7f10ffffffff0718ffffffff0f20ffffffffffffffff7f28ffffffff07"},
 		{"NewValidBlock", &cmtcons.Message{Sum: &cmtcons.Message_NewValidBlock{
-			NewValidBlock: &cmtcons.NewValidBlock{
+			NewValidBlock: &cmtcons1.NewValidBlock{
 				Height: 1, Round: 1, BlockPartSetHeader: pbPsh, BlockParts: pbBits, IsCommit: false}}},
 			"1231080110011a24080112206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d22050801120100"},
-		{"Proposal", &cmtcons.Message{Sum: &cmtcons.Message_Proposal{Proposal: &cmtcons.Proposal{Proposal: *pbProposal}}},
+		{"Proposal", &cmtcons.Message{Sum: &cmtcons.Message_Proposal{Proposal: &cmtcons1.Proposal{Proposal: *pbProposal}}},
 			"1a720a7008201001180120012a480a206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d1224080112206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d320608c0b89fdc053a146164645f6d6f72655f6578636c616d6174696f6e"},
 		{"ProposalPol", &cmtcons.Message{Sum: &cmtcons.Message_ProposalPol{
-			ProposalPol: &cmtcons.ProposalPOL{Height: 1, ProposalPolRound: 1}}},
+			ProposalPol: &cmtcons1.ProposalPOL{Height: 1, ProposalPolRound: 1}}},
 			"2206080110011a00"},
 		{"BlockPart", &cmtcons.Message{Sum: &cmtcons.Message_BlockPart{
-			BlockPart: &cmtcons.BlockPart{Height: 1, Round: 1, Part: *pbParts}}},
+			BlockPart: &cmtcons1.BlockPart{Height: 1, Round: 1, Part: *pbParts}}},
 			"2a36080110011a3008011204746573741a26080110011a206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d"},
 		{"Vote_without_ext", &cmtcons.Message{Sum: &cmtcons.Message_Vote{
 			Vote: &cmtcons.Vote{Vote: vpb}}},
@@ -392,17 +393,17 @@ func TestConsMsgsVectors(t *testing.T) {
 			Vote: &cmtcons.Vote{Vote: vextPb}}},
 			"327b0a790802100122480a206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d1224080112206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d2a0608c0b89fdc0532146164645f6d6f72655f6578636c616d6174696f6e38014a09657874656e73696f6e"},
 		{"HasVote", &cmtcons.Message{Sum: &cmtcons.Message_HasVote{
-			HasVote: &cmtcons.HasVote{Height: 1, Round: 1, Type: cmtproto.PrevoteType, Index: 1}}},
+			HasVote: &cmtcons1.HasVote{Height: 1, Round: 1, Type: types.SignedMsgType_PREVOTE, Index: 1}}},
 			"3a080801100118012001"},
 		{"HasVote", &cmtcons.Message{Sum: &cmtcons.Message_HasVote{
-			HasVote: &cmtcons.HasVote{Height: math.MaxInt64, Round: math.MaxInt32,
-				Type: cmtproto.PrevoteType, Index: math.MaxInt32}}},
+			HasVote: &cmtcons1.HasVote{Height: math.MaxInt64, Round: math.MaxInt32,
+				Type: types.SignedMsgType_PREVOTE, Index: math.MaxInt32}}},
 			"3a1808ffffffffffffffff7f10ffffffff07180120ffffffff07"},
 		{"VoteSetMaj23", &cmtcons.Message{Sum: &cmtcons.Message_VoteSetMaj23{
-			VoteSetMaj23: &cmtcons.VoteSetMaj23{Height: 1, Round: 1, Type: cmtproto.PrevoteType, BlockID: pbBi}}},
+			VoteSetMaj23: &cmtcons1.VoteSetMaj23{Height: 1, Round: 1, Type: types.SignedMsgType_PREVOTE, BlockID: pbBi}}},
 			"425008011001180122480a206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d1224080112206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d"},
 		{"VoteSetBits", &cmtcons.Message{Sum: &cmtcons.Message_VoteSetBits{
-			VoteSetBits: &cmtcons.VoteSetBits{Height: 1, Round: 1, Type: cmtproto.PrevoteType, BlockID: pbBi, Votes: *pbBits}}},
+			VoteSetBits: &cmtcons1.VoteSetBits{Height: 1, Round: 1, Type: types.SignedMsgType_PREVOTE, BlockID: pbBi, Votes: *pbBits}}},
 			"4a5708011001180122480a206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d1224080112206164645f6d6f72655f6578636c616d6174696f6e5f6d61726b735f636f64652d2a050801120100"},
 	}
 

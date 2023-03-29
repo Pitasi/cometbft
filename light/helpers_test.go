@@ -6,7 +6,6 @@ import (
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/crypto/tmhash"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
 	"github.com/cometbft/cometbft/types"
 	cmttime "github.com/cometbft/cometbft/types/time"
@@ -109,7 +108,7 @@ func makeVote(header *types.Header, valset *types.ValidatorSet,
 		Height:           header.Height,
 		Round:            1,
 		Timestamp:        cmttime.Now(),
-		Type:             cmtproto.PrecommitType,
+		Type:             types.SignedMsgType_PRECOMMIT,
 		BlockID:          blockID,
 	}
 

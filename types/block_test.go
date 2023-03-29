@@ -22,7 +22,6 @@ import (
 	"github.com/cometbft/cometbft/libs/bits"
 	"github.com/cometbft/cometbft/libs/bytes"
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
 	cmttime "github.com/cometbft/cometbft/types/time"
 	"github.com/cometbft/cometbft/version"

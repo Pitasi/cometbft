@@ -25,7 +25,7 @@ import (
 
 	"github.com/cometbft/cometbft/p2p"
 	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtcons1 "github.com/cometbft/cometbft/proto/cometbft/consensus/v1"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/store"
 	"github.com/cometbft/cometbft/types"
@@ -145,9 +145,9 @@ func TestByzantinePrevoteEquivocation(t *testing.T) {
 		// allow first height to happen normally so that byzantine validator is no longer proposer
 		if height == prevoteHeight {
 			bcs.Logger.Info("Sending two votes")
-			prevote1, err := bcs.signVote(cmtproto.PrevoteType, bcs.ProposalBlock.Hash(), bcs.ProposalBlockParts.Header())
+			prevote1, err := bcs.signVote(types.SignedMsgType_PREVOTE, bcs.ProposalBlock.Hash(), bcs.ProposalBlockParts.Header())
 			require.NoError(t, err)
-			prevote2, err := bcs.signVote(cmtproto.PrevoteType, nil, types.PartSetHeader{})
+			prevote2, err := bcs.signVote(types.SignedMsgType_PREVOTE, nil, types.PartSetHeader{})
 			require.NoError(t, err)
 			peerList := reactors[byzantineNode].Switch.Peers().List()
 			bcs.Logger.Info("Getting peer list", "peers", peerList)
@@ -520,7 +520,7 @@ func sendProposalAndParts(
 	// proposal
 	peer.Send(p2p.Envelope{
 		ChannelID: DataChannel,
-		Message:   &cmtcons.Proposal{Proposal: *proposal.ToProto()},
+		Message:   &cmtcons1.Proposal{Proposal: *proposal.ToProto()},
 	})
 
 	// parts
@@ -532,7 +532,7 @@ func sendProposalAndParts(
 		}
 		peer.Send(p2p.Envelope{
 			ChannelID: DataChannel,
-			Message: &cmtcons.BlockPart{
+			Message: &cmtcons1.BlockPart{
 				Height: height, // This tells peer that this part applies to us.
 				Round:  round,  // This tells peer that this part applies to us.
 				Part:   *pp,
@@ -542,8 +542,8 @@ func sendProposalAndParts(
 
 	// votes
 	cs.mtx.Lock()
-	prevote, _ := cs.signVote(cmtproto.PrevoteType, blockHash, parts.Header())
-	precommit, _ := cs.signVote(cmtproto.PrecommitType, blockHash, parts.Header())
+	prevote, _ := cs.signVote(types.SignedMsgType_PREVOTE, blockHash, parts.Header())
+	precommit, _ := cs.signVote(types.SignedMsgType_PRECOMMIT, blockHash, parts.Header())
 	cs.mtx.Unlock()
 	peer.Send(p2p.Envelope{
 		ChannelID: VoteChannel,

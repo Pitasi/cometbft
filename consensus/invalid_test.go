@@ -10,7 +10,6 @@ import (
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cometbft/cometbft/p2p"
 	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -86,7 +85,7 @@ func invalidDoPrevoteFunc(t *testing.T, height int64, round int32, cs *State, sw
 			Height:           cs.Height,
 			Round:            cs.Round,
 			Timestamp:        cs.voteTime(),
-			Type:             cmtproto.PrecommitType,
+			Type:             types.SignedMsgType_PRECOMMIT,
 			BlockID: types.BlockID{
 				Hash:          blockHash,
 				PartSetHeader: types.PartSetHeader{Total: 1, Hash: cmtrand.Bytes(32)}},

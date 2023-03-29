@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/assert"
 
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v1"
 )
 
 func TestMarshalJSON(t *testing.T) {

@@ -14,6 +14,7 @@ import (
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/internal/test"
 	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtproto2 "github.com/cometbft/cometbft/proto/cometbft/types/v2"
 	"github.com/cometbft/cometbft/proxy"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/types"
@@ -103,7 +104,7 @@ func makeValidCommit(
 			int32(i),
 			height,
 			0,
-			cmtproto.PrecommitType,
+			types.SignedMsgType_PRECOMMIT,
 			blockID,
 			time.Now(),
 		)
@@ -261,7 +262,7 @@ func (app *testApp) FinalizeBlock(_ context.Context, req *abci.RequestFinalizeBl
 	return &abci.ResponseFinalizeBlock{
 		ValidatorUpdates: app.ValidatorUpdates,
 		ConsensusParamUpdates: &cmtproto.ConsensusParams{
-			Version: &cmtproto.VersionParams{
+			Version: &cmtproto2.VersionParams{
 				App: 1,
 			},
 		},

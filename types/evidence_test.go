@@ -11,7 +11,6 @@ import (
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
 	"github.com/cometbft/cometbft/version"
 )
