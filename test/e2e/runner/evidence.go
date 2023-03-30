@@ -15,7 +15,6 @@ import (
 	"github.com/cometbft/cometbft/internal/test"
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/privval"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
 	e2e "github.com/cometbft/cometbft/test/e2e/pkg"
 	"github.com/cometbft/cometbft/types"
