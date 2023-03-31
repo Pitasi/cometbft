@@ -1,7 +1,7 @@
 syntax = "proto3";
 package cometbft.blockchain.v1;
 
-option go_package = "github.com/cometbft/cometbft/proto/cometbft/blockchain/v1";
+option go_package = "github.com/cometbft/cometbft/api/cometbft/blockchain/v1";
 
 import "cometbft/types/v1/block.proto";
 

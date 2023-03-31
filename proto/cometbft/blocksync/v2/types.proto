@@ -1,7 +1,7 @@
 syntax = "proto3";
 package cometbft.blocksync.v2;
 
-option go_package = "github.com/cometbft/cometbft/proto/cometbft/blocksync/v2";
+option go_package = "github.com/cometbft/cometbft/api/cometbft/blocksync/v2";
 
 import "cometbft/blocksync/v1/types.proto";
 

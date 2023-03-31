@@ -1,7 +1,7 @@
 syntax = "proto3";
 package cometbft.store.v1;
 
-option go_package = "github.com/cometbft/cometbft/proto/cometbft/store/v1";
+option go_package = "github.com/cometbft/cometbft/api/cometbft/store/v1";
 
 message BlockStoreState {
   int64 base   = 1;
