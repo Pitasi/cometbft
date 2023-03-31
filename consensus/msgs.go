@@ -16,83 +16,82 @@ import (
 	"github.com/cometbft/cometbft/types"
 )
 
-// MsgToProto takes a consensus message type and returns the proto defined consensus message.
-//
-// TODO: This needs to be removed, but WALToProto depends on this.
-func MsgToProto(msg Message) (proto.Message, error) {
+// Takes a consensus message type and returns the proto defined consensus message,
+// wrapped in the discriminating Message container.
+func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
+	pb := cmtcons.Message{}
 	if msg == nil {
-		return nil, errors.New("consensus: message is nil")
+		return pb, errors.New("consensus: message is nil")
 	}
-	var pb proto.Message
 
 	switch msg := msg.(type) {
 	case *NewRoundStepMessage:
-		pb = &cmtcons1.NewRoundStep{
+		pb.Sum = &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons1.NewRoundStep {
 			Height:                msg.Height,
 			Round:                 msg.Round,
 			Step:                  uint32(msg.Step),
 			SecondsSinceStartTime: msg.SecondsSinceStartTime,
 			LastCommitRound:       msg.LastCommitRound,
-		}
+		}}
 
 	case *NewValidBlockMessage:
 		pbPartSetHeader := msg.BlockPartSetHeader.ToProto()
 		pbBits := msg.BlockParts.ToProto()
-		pb = &cmtcons1.NewValidBlock{
+		pb.Sum = &cmtcons.Message_NewValidBlock{NewValidBlock: &cmtcons1.NewValidBlock{
 			Height:             msg.Height,
 			Round:              msg.Round,
 			BlockPartSetHeader: pbPartSetHeader,
 			BlockParts:         pbBits,
 			IsCommit:           msg.IsCommit,
-		}
+		}}
 
 	case *ProposalMessage:
 		pbP := msg.Proposal.ToProto()
-		pb = &cmtcons1.Proposal{
+		pb.Sum = &cmtcons.Message_Proposal{Proposal: &cmtcons1.Proposal{
 			Proposal: *pbP,
-		}
+		}}
 
 	case *ProposalPOLMessage:
 		pbBits := msg.ProposalPOL.ToProto()
-		pb = &cmtcons1.ProposalPOL{
+		pb.Sum = &cmtcons.Message_ProposalPol{ProposalPol: &cmtcons1.ProposalPOL{
 			Height:           msg.Height,
 			ProposalPolRound: msg.ProposalPOLRound,
 			ProposalPol:      *pbBits,
-		}
+		}}
 
 	case *BlockPartMessage:
 		parts, err := msg.Part.ToProto()
 		if err != nil {
-			return nil, fmt.Errorf("msg to proto error: %w", err)
+			return pb, fmt.Errorf("msg to proto error: %w", err)
 		}
-		pb = &cmtcons1.BlockPart{
+		pb.Sum = &cmtcons.Message_BlockPart{BlockPart: &cmtcons1.BlockPart{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Part:   *parts,
-		}
+		}}
 
 	case *VoteMessage:
 		vote := msg.Vote.ToProto()
-		pb = &cmtcons.Vote{
+		pb.Sum = &cmtcons.Message_Vote{Vote: &cmtcons.Vote{
 			Vote: vote,
-		}
+		}}
 
 	case *HasVoteMessage:
-		pb = &cmtcons1.HasVote{
+		pb.Sum = &cmtcons.Message_HasVote{HasVote: &cmtcons1.HasVote{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Type:   msg.Type,
 			Index:  msg.Index,
-		}
+		}}
 
 	case *VoteSetMaj23Message:
 		bi := msg.BlockID.ToProto()
-		pb = &cmtcons1.VoteSetMaj23{
+		pb.Sum = &cmtcons.Message_VoteSetMaj23{VoteSetMaj23: &cmtcons1.VoteSetMaj23{
 			Height:  msg.Height,
 			Round:   msg.Round,
 			Type:    msg.Type,
 			BlockID: bi,
-		}
+		}}
 
 	case *VoteSetBitsMessage:
 		bi := msg.BlockID.ToProto()
@@ -109,10 +108,10 @@ func MsgToProto(msg Message) (proto.Message, error) {
 			vsb.Votes = *bits
 		}
 
-		pb = vsb
+		pb.Sum = &cmtcons.Message_VoteSetBits{VoteSetBits: vsb}
 
 	default:
-		return nil, fmt.Errorf("consensus: message not recognized: %T", msg)
+		return pb, fmt.Errorf("consensus: message not recognized: %T", msg)
 	}
 
 	return pb, nil
@@ -253,18 +252,14 @@ func WALToProto(msg WALMessage) (*cmtcons.WALMessage, error) {
 			},
 		}
 	case msgInfo:
-		consMsg, err := MsgToProto(msg.Msg)
+		cm, err := MsgToWrappedProto(msg.Msg)
 		if err != nil {
 			return nil, err
 		}
-		if w, ok := consMsg.(p2p.Wrapper); ok {
-			consMsg = w.Wrap()
-		}
-		cm := consMsg.(*cmtcons.Message)
 		pb = cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_MsgInfo{
 				MsgInfo: &cmtcons.MsgInfo{
-					Msg:    *cm,
+					Msg:    cm,
 					PeerID: string(msg.PeerID),
 				},
 			},
