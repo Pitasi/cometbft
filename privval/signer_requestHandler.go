@@ -3,31 +3,29 @@ package privval
 import (
 	"fmt"
 
+	cryptoproto "github.com/cometbft/cometbft/api/cometbft/crypto/v1"
+	pvproto "github.com/cometbft/cometbft/api/cometbft/privval"
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	"github.com/cometbft/cometbft/crypto"
 	cryptoenc "github.com/cometbft/cometbft/crypto/encoding"
-	cryptoproto "github.com/cometbft/cometbft/proto/cometbft/crypto/v1"
-	pvproto1 "github.com/cometbft/cometbft/proto/cometbft/privval/v1"
-	pvproto2 "github.com/cometbft/cometbft/proto/cometbft/privval/v2"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
 	"github.com/cometbft/cometbft/types"
 )
 
 func DefaultValidationRequestHandler(
 	privVal types.PrivValidator,
-	req pvproto2.Message,
+	req pvproto.Message,
 	chainID string,
-) (pvproto2.Message, error) {
+) (pvproto.Message, error) {
 	var (
-		res pvproto2.Message
+		res pvproto.Message
 		err error
 	)
 
 	switch r := req.Sum.(type) {
-	case *pvproto2.Message_PubKeyRequest:
+	case *pvproto.Message_PubKeyRequest:
 		if r.PubKeyRequest.GetChainId() != chainID {
-			res = mustWrapMsg(&pvproto1.PubKeyResponse{
-				PubKey: cryptoproto.PublicKey{}, Error: &pvproto1.RemoteSignerError{
+			res = mustWrapMsg(&pvproto.PubKeyResponse{
+				PubKey: cryptoproto.PublicKey{}, Error: &pvproto.RemoteSignerError{
 					Code: 0, Description: "unable to provide pubkey"}})
 			return res, fmt.Errorf("want chainID: %s, got chainID: %s", r.PubKeyRequest.GetChainId(), chainID)
 		}
@@ -43,16 +41,16 @@ func DefaultValidationRequestHandler(
 		}
 
 		if err != nil {
-			res = mustWrapMsg(&pvproto1.PubKeyResponse{
-				PubKey: cryptoproto.PublicKey{}, Error: &pvproto1.RemoteSignerError{Code: 0, Description: err.Error()}})
+			res = mustWrapMsg(&pvproto.PubKeyResponse{
+				PubKey: cryptoproto.PublicKey{}, Error: &pvproto.RemoteSignerError{Code: 0, Description: err.Error()}})
 		} else {
-			res = mustWrapMsg(&pvproto1.PubKeyResponse{PubKey: pk, Error: nil})
+			res = mustWrapMsg(&pvproto.PubKeyResponse{PubKey: pk, Error: nil})
 		}
 
-	case *pvproto2.Message_SignVoteRequest:
+	case *pvproto.Message_SignVoteRequest:
 		if r.SignVoteRequest.ChainId != chainID {
-			res = mustWrapMsg(&pvproto2.SignedVoteResponse{
-				Vote: cmtproto.Vote{}, Error: &pvproto1.RemoteSignerError{
+			res = mustWrapMsg(&pvproto.SignedVoteResponse{
+				Vote: cmtproto.Vote{}, Error: &pvproto.RemoteSignerError{
 					Code: 0, Description: "unable to sign vote"}})
 			return res, fmt.Errorf("want chainID: %s, got chainID: %s", r.SignVoteRequest.GetChainId(), chainID)
 		}
@@ -61,16 +59,16 @@ func DefaultValidationRequestHandler(
 
 		err = privVal.SignVote(chainID, vote)
 		if err != nil {
-			res = mustWrapMsg(&pvproto2.SignedVoteResponse{
-				Vote: cmtproto.Vote{}, Error: &pvproto1.RemoteSignerError{Code: 0, Description: err.Error()}})
+			res = mustWrapMsg(&pvproto.SignedVoteResponse{
+				Vote: cmtproto.Vote{}, Error: &pvproto.RemoteSignerError{Code: 0, Description: err.Error()}})
 		} else {
-			res = mustWrapMsg(&pvproto2.SignedVoteResponse{Vote: *vote, Error: nil})
+			res = mustWrapMsg(&pvproto.SignedVoteResponse{Vote: *vote, Error: nil})
 		}
 
-	case *pvproto2.Message_SignProposalRequest:
+	case *pvproto.Message_SignProposalRequest:
 		if r.SignProposalRequest.GetChainId() != chainID {
-			res = mustWrapMsg(&pvproto1.SignedProposalResponse{
-				Proposal: cmtproto1.Proposal{}, Error: &pvproto1.RemoteSignerError{
+			res = mustWrapMsg(&pvproto.SignedProposalResponse{
+				Proposal: cmtproto.Proposal{}, Error: &pvproto.RemoteSignerError{
 					Code:        0,
 					Description: "unable to sign proposal"}})
 			return res, fmt.Errorf("want chainID: %s, got chainID: %s", r.SignProposalRequest.GetChainId(), chainID)
@@ -80,13 +78,13 @@ func DefaultValidationRequestHandler(
 
 		err = privVal.SignProposal(chainID, proposal)
 		if err != nil {
-			res = mustWrapMsg(&pvproto1.SignedProposalResponse{
-				Proposal: cmtproto1.Proposal{}, Error: &pvproto1.RemoteSignerError{Code: 0, Description: err.Error()}})
+			res = mustWrapMsg(&pvproto.SignedProposalResponse{
+				Proposal: cmtproto.Proposal{}, Error: &pvproto.RemoteSignerError{Code: 0, Description: err.Error()}})
 		} else {
-			res = mustWrapMsg(&pvproto1.SignedProposalResponse{Proposal: *proposal, Error: nil})
+			res = mustWrapMsg(&pvproto.SignedProposalResponse{Proposal: *proposal, Error: nil})
 		}
-	case *pvproto2.Message_PingRequest:
-		err, res = nil, mustWrapMsg(&pvproto1.PingResponse{})
+	case *pvproto.Message_PingRequest:
+		err, res = nil, mustWrapMsg(&pvproto.PingResponse{})
 
 	default:
 		err = fmt.Errorf("unknown msg: %v", r)

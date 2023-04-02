@@ -10,9 +10,8 @@ import (
 	"github.com/cometbft/cometbft/libs/bits"
 	cmtmath "github.com/cometbft/cometbft/libs/math"
 	"github.com/cometbft/cometbft/p2p"
-	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtcons1 "github.com/cometbft/cometbft/proto/cometbft/consensus/v1"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v1"
+	cmtcons "github.com/cometbft/cometbft/api/cometbft/consensus"
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -26,7 +25,7 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 
 	switch msg := msg.(type) {
 	case *NewRoundStepMessage:
-		pb.Sum = &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons1.NewRoundStep {
+		pb.Sum = &cmtcons.Message_NewRoundStep{NewRoundStep: &cmtcons.NewRoundStep {
 			Height:                msg.Height,
 			Round:                 msg.Round,
 			Step:                  uint32(msg.Step),
@@ -37,7 +36,7 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 	case *NewValidBlockMessage:
 		pbPartSetHeader := msg.BlockPartSetHeader.ToProto()
 		pbBits := msg.BlockParts.ToProto()
-		pb.Sum = &cmtcons.Message_NewValidBlock{NewValidBlock: &cmtcons1.NewValidBlock{
+		pb.Sum = &cmtcons.Message_NewValidBlock{NewValidBlock: &cmtcons.NewValidBlock{
 			Height:             msg.Height,
 			Round:              msg.Round,
 			BlockPartSetHeader: pbPartSetHeader,
@@ -47,13 +46,13 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 
 	case *ProposalMessage:
 		pbP := msg.Proposal.ToProto()
-		pb.Sum = &cmtcons.Message_Proposal{Proposal: &cmtcons1.Proposal{
+		pb.Sum = &cmtcons.Message_Proposal{Proposal: &cmtcons.Proposal{
 			Proposal: *pbP,
 		}}
 
 	case *ProposalPOLMessage:
 		pbBits := msg.ProposalPOL.ToProto()
-		pb.Sum = &cmtcons.Message_ProposalPol{ProposalPol: &cmtcons1.ProposalPOL{
+		pb.Sum = &cmtcons.Message_ProposalPol{ProposalPol: &cmtcons.ProposalPOL{
 			Height:           msg.Height,
 			ProposalPolRound: msg.ProposalPOLRound,
 			ProposalPol:      *pbBits,
@@ -64,7 +63,7 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 		if err != nil {
 			return pb, fmt.Errorf("msg to proto error: %w", err)
 		}
-		pb.Sum = &cmtcons.Message_BlockPart{BlockPart: &cmtcons1.BlockPart{
+		pb.Sum = &cmtcons.Message_BlockPart{BlockPart: &cmtcons.BlockPart{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Part:   *parts,
@@ -77,7 +76,7 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 		}}
 
 	case *HasVoteMessage:
-		pb.Sum = &cmtcons.Message_HasVote{HasVote: &cmtcons1.HasVote{
+		pb.Sum = &cmtcons.Message_HasVote{HasVote: &cmtcons.HasVote{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Type:   msg.Type,
@@ -86,7 +85,7 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 
 	case *VoteSetMaj23Message:
 		bi := msg.BlockID.ToProto()
-		pb.Sum = &cmtcons.Message_VoteSetMaj23{VoteSetMaj23: &cmtcons1.VoteSetMaj23{
+		pb.Sum = &cmtcons.Message_VoteSetMaj23{VoteSetMaj23: &cmtcons.VoteSetMaj23{
 			Height:  msg.Height,
 			Round:   msg.Round,
 			Type:    msg.Type,
@@ -97,7 +96,7 @@ func MsgToWrappedProto(msg Message) (cmtcons.Message, error) {
 		bi := msg.BlockID.ToProto()
 		bits := msg.Votes.ToProto()
 
-		vsb := &cmtcons1.VoteSetBits{
+		vsb := &cmtcons.VoteSetBits{
 			Height:  msg.Height,
 			Round:   msg.Round,
 			Type:    msg.Type,
@@ -125,7 +124,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 	var pb Message
 
 	switch msg := p.(type) {
-	case *cmtcons1.NewRoundStep:
+	case *cmtcons.NewRoundStep:
 		rs, err := cmtmath.SafeConvertUint8(int64(msg.Step))
 		// deny message based on possible overflow
 		if err != nil {
@@ -138,7 +137,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			SecondsSinceStartTime: msg.SecondsSinceStartTime,
 			LastCommitRound:       msg.LastCommitRound,
 		}
-	case *cmtcons1.NewValidBlock:
+	case *cmtcons.NewValidBlock:
 		pbPartSetHeader, err := types.PartSetHeaderFromProto(&msg.BlockPartSetHeader)
 		if err != nil {
 			return nil, fmt.Errorf("parts to proto error: %w", err)
@@ -154,7 +153,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			BlockParts:         pbBits,
 			IsCommit:           msg.IsCommit,
 		}
-	case *cmtcons1.Proposal:
+	case *cmtcons.Proposal:
 		pbP, err := types.ProposalFromProto(&msg.Proposal)
 		if err != nil {
 			return nil, fmt.Errorf("proposal msg to proto error: %w", err)
@@ -163,7 +162,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 		pb = &ProposalMessage{
 			Proposal: pbP,
 		}
-	case *cmtcons1.ProposalPOL:
+	case *cmtcons.ProposalPOL:
 		pbBits := new(bits.BitArray)
 		pbBits.FromProto(&msg.ProposalPol)
 		pb = &ProposalPOLMessage{
@@ -171,7 +170,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			ProposalPOLRound: msg.ProposalPolRound,
 			ProposalPOL:      pbBits,
 		}
-	case *cmtcons1.BlockPart:
+	case *cmtcons.BlockPart:
 		parts, err := types.PartFromProto(&msg.Part)
 		if err != nil {
 			return nil, fmt.Errorf("blockpart msg to proto error: %w", err)
@@ -192,14 +191,14 @@ func MsgFromProto(p proto.Message) (Message, error) {
 		pb = &VoteMessage{
 			Vote: vote,
 		}
-	case *cmtcons1.HasVote:
+	case *cmtcons.HasVote:
 		pb = &HasVoteMessage{
 			Height: msg.Height,
 			Round:  msg.Round,
 			Type:   msg.Type,
 			Index:  msg.Index,
 		}
-	case *cmtcons1.VoteSetMaj23:
+	case *cmtcons.VoteSetMaj23:
 		bi, err := types.BlockIDFromProto(&msg.BlockID)
 		if err != nil {
 			return nil, fmt.Errorf("voteSetMaj23 msg to proto error: %w", err)
@@ -210,7 +209,7 @@ func MsgFromProto(p proto.Message) (Message, error) {
 			Type:    msg.Type,
 			BlockID: *bi,
 		}
-	case *cmtcons1.VoteSetBits:
+	case *cmtcons.VoteSetBits:
 		bi, err := types.BlockIDFromProto(&msg.BlockID)
 		if err != nil {
 			return nil, fmt.Errorf("voteSetBits msg to proto error: %w", err)
@@ -267,7 +266,7 @@ func WALToProto(msg WALMessage) (*cmtcons.WALMessage, error) {
 	case timeoutInfo:
 		pb = cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_TimeoutInfo{
-				TimeoutInfo: &cmtcons1.TimeoutInfo{
+				TimeoutInfo: &cmtcons.TimeoutInfo{
 					Duration: msg.Duration,
 					Height:   msg.Height,
 					Round:    msg.Round,
@@ -278,7 +277,7 @@ func WALToProto(msg WALMessage) (*cmtcons.WALMessage, error) {
 	case EndHeightMessage:
 		pb = cmtcons.WALMessage{
 			Sum: &cmtcons.WALMessage_EndHeight{
-				EndHeight: &cmtcons1.EndHeight{
+				EndHeight: &cmtcons.EndHeight{
 					Height: msg.Height,
 				},
 			},

@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/cometbft/cometbft/abci/types"
+	pbcrypto "github.com/cometbft/cometbft/api/cometbft/crypto/v1"
 	cryptoencoding "github.com/cometbft/cometbft/crypto/encoding"
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
-	pbcrypto "github.com/cometbft/cometbft/proto/cometbft/crypto/v1"
 )
 
 // RandVal creates one random validator, with a key derived

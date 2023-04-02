@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/gogoproto/proto"
 
-	"github.com/cometbft/cometbft/abci/types/v3"
+	v3 "github.com/cometbft/cometbft/api/cometbft/abci/v3"
 	"github.com/cometbft/cometbft/libs/protoio"
 )
 

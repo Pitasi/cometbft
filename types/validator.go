@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	"github.com/cometbft/cometbft/crypto"
 	ce "github.com/cometbft/cometbft/crypto/encoding"
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v1"
 )
 
 // Volatile state for each Validator

@@ -16,7 +16,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	cmtos "github.com/cometbft/cometbft/libs/os"
 	"github.com/cometbft/cometbft/libs/service"
-	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
+	cmtcons "github.com/cometbft/cometbft/api/cometbft/consensus"
 	cmttime "github.com/cometbft/cometbft/types/time"
 )
 

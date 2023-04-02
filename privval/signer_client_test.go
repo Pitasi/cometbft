@@ -8,12 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	cryptoproto "github.com/cometbft/cometbft/api/cometbft/crypto/v1"
+	privvalproto "github.com/cometbft/cometbft/api/cometbft/privval"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
-	cryptoproto "github.com/cometbft/cometbft/proto/cometbft/crypto/v1"
-	privvalproto "github.com/cometbft/cometbft/proto/cometbft/privval/v2"
-	privvalproto1 "github.com/cometbft/cometbft/proto/cometbft/privval/v1"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -397,13 +396,13 @@ func brokenHandler(privVal types.PrivValidator, request privvalproto.Message,
 	switch r := request.Sum.(type) {
 	// This is broken and will answer most requests with a pubkey response
 	case *privvalproto.Message_PubKeyRequest:
-		res = mustWrapMsg(&privvalproto1.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
+		res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
 	case *privvalproto.Message_SignVoteRequest:
-		res = mustWrapMsg(&privvalproto1.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
+		res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
 	case *privvalproto.Message_SignProposalRequest:
-		res = mustWrapMsg(&privvalproto1.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
+		res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
 	case *privvalproto.Message_PingRequest:
-		err, res = nil, mustWrapMsg(&privvalproto1.PingResponse{})
+		err, res = nil, mustWrapMsg(&privvalproto.PingResponse{})
 	default:
 		err = fmt.Errorf("unknown msg: %v", r)
 	}

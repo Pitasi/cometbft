@@ -10,6 +10,8 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	gogotypes "github.com/cosmos/gogoproto/types"
 
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
+	cmtversion "github.com/cometbft/cometbft/api/cometbft/version/v1"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/merkle"
 	"github.com/cometbft/cometbft/crypto/tmhash"
@@ -17,9 +19,6 @@ import (
 	cmtbytes "github.com/cometbft/cometbft/libs/bytes"
 	cmtmath "github.com/cometbft/cometbft/libs/math"
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
-	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
 	"github.com/cometbft/cometbft/version"
 )
 
@@ -515,12 +514,12 @@ func (h *Header) StringIndented(indent string) string {
 }
 
 // ToProto converts Header to protobuf
-func (h *Header) ToProto() *cmtproto1.Header {
+func (h *Header) ToProto() *cmtproto.Header {
 	if h == nil {
 		return nil
 	}
 
-	return &cmtproto1.Header{
+	return &cmtproto.Header{
 		Version:            h.Version,
 		ChainID:            h.ChainID,
 		Height:             h.Height,
@@ -540,7 +539,7 @@ func (h *Header) ToProto() *cmtproto1.Header {
 
 // FromProto sets a protobuf Header to the given pointer.
 // It returns an error if the header is invalid.
-func HeaderFromProto(ph *cmtproto1.Header) (Header, error) {
+func HeaderFromProto(ph *cmtproto.Header) (Header, error) {
 	if ph == nil {
 		return Header{}, errors.New("nil Header")
 	}
@@ -687,13 +686,13 @@ func (cs CommitSig) ValidateBasic() error {
 }
 
 // ToProto converts CommitSig to protobuf
-func (cs *CommitSig) ToProto() *cmtproto1.CommitSig {
+func (cs *CommitSig) ToProto() *cmtproto.CommitSig {
 	if cs == nil {
 		return nil
 	}
 
-	return &cmtproto1.CommitSig{
-		BlockIdFlag:      cmtproto1.BlockIDFlag(cs.BlockIDFlag),
+	return &cmtproto.CommitSig{
+		BlockIdFlag:      cmtproto.BlockIDFlag(cs.BlockIDFlag),
 		ValidatorAddress: cs.ValidatorAddress,
 		Timestamp:        cs.Timestamp,
 		Signature:        cs.Signature,
@@ -702,7 +701,7 @@ func (cs *CommitSig) ToProto() *cmtproto1.CommitSig {
 
 // FromProto sets a protobuf CommitSig to the given pointer.
 // It returns an error if the CommitSig is invalid.
-func (cs *CommitSig) FromProto(csp cmtproto1.CommitSig) error {
+func (cs *CommitSig) FromProto(csp cmtproto.CommitSig) error {
 	cs.BlockIDFlag = BlockIDFlag(csp.BlockIdFlag)
 	cs.ValidatorAddress = csp.ValidatorAddress
 	cs.Timestamp = csp.Timestamp
@@ -985,13 +984,13 @@ func (commit *Commit) StringIndented(indent string) string {
 }
 
 // ToProto converts Commit to protobuf
-func (commit *Commit) ToProto() *cmtproto1.Commit {
+func (commit *Commit) ToProto() *cmtproto.Commit {
 	if commit == nil {
 		return nil
 	}
 
-	c := new(cmtproto1.Commit)
-	sigs := make([]cmtproto1.CommitSig, len(commit.Signatures))
+	c := new(cmtproto.Commit)
+	sigs := make([]cmtproto.CommitSig, len(commit.Signatures))
 	for i := range commit.Signatures {
 		sigs[i] = *commit.Signatures[i].ToProto()
 	}
@@ -1006,7 +1005,7 @@ func (commit *Commit) ToProto() *cmtproto1.Commit {
 
 // FromProto sets a protobuf Commit to the given pointer.
 // It returns an error if the commit is invalid.
-func CommitFromProto(cp *cmtproto1.Commit) (*Commit, error) {
+func CommitFromProto(cp *cmtproto.Commit) (*Commit, error) {
 	if cp == nil {
 		return nil, errors.New("nil Commit")
 	}
@@ -1321,8 +1320,8 @@ func (data *Data) StringIndented(indent string) string {
 }
 
 // ToProto converts Data to protobuf
-func (data *Data) ToProto() cmtproto1.Data {
-	tp := new(cmtproto1.Data)
+func (data *Data) ToProto() cmtproto.Data {
+	tp := new(cmtproto.Data)
 
 	if len(data.Txs) > 0 {
 		txBzs := make([][]byte, len(data.Txs))
@@ -1337,7 +1336,7 @@ func (data *Data) ToProto() cmtproto1.Data {
 
 // DataFromProto takes a protobuf representation of Data &
 // returns the native type.
-func DataFromProto(dp *cmtproto1.Data) (Data, error) {
+func DataFromProto(dp *cmtproto.Data) (Data, error) {
 	if dp == nil {
 		return Data{}, errors.New("nil data")
 	}
@@ -1508,12 +1507,12 @@ func (blockID BlockID) String() string {
 }
 
 // ToProto converts BlockID to protobuf
-func (blockID *BlockID) ToProto() cmtproto1.BlockID {
+func (blockID *BlockID) ToProto() cmtproto.BlockID {
 	if blockID == nil {
-		return cmtproto1.BlockID{}
+		return cmtproto.BlockID{}
 	}
 
-	return cmtproto1.BlockID{
+	return cmtproto.BlockID{
 		Hash:          blockID.Hash,
 		PartSetHeader: blockID.PartSetHeader.ToProto(),
 	}
@@ -1521,7 +1520,7 @@ func (blockID *BlockID) ToProto() cmtproto1.BlockID {
 
 // FromProto sets a protobuf BlockID to the given pointer.
 // It returns an error if the block id is invalid.
-func BlockIDFromProto(bID *cmtproto1.BlockID) (*BlockID, error) {
+func BlockIDFromProto(bID *cmtproto.BlockID) (*BlockID, error) {
 	if bID == nil {
 		return nil, errors.New("nil BlockID")
 	}
@@ -1540,6 +1539,6 @@ func BlockIDFromProto(bID *cmtproto1.BlockID) (*BlockID, error) {
 
 // ProtoBlockIDIsNil is similar to the IsNil function on BlockID, but for the
 // Protobuf representation.
-func ProtoBlockIDIsNil(bID *cmtproto1.BlockID) bool {
+func ProtoBlockIDIsNil(bID *cmtproto.BlockID) bool {
 	return len(bID.Hash) == 0 && ProtoPartSetHeaderIsZero(&bID.PartSetHeader)
 }

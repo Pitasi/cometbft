@@ -6,10 +6,10 @@ import (
 	"github.com/cosmos/gogoproto/grpc"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	v1 "github.com/cometbft/cometbft/api/cometbft/rpc/grpc/v1"
+	v3 "github.com/cometbft/cometbft/api/cometbft/rpc/grpc/v3"
 	core "github.com/cometbft/cometbft/rpc/core"
 	rpctypes "github.com/cometbft/cometbft/rpc/jsonrpc/types"
-	"github.com/cometbft/cometbft/rpc/grpc/v1"
-	"github.com/cometbft/cometbft/rpc/grpc/v3"
 )
 
 type BroadcastAPIClient = v3.BroadcastAPIClient

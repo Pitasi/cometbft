@@ -8,12 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	"github.com/cometbft/cometbft/libs/protoio"
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	cmttime "github.com/cometbft/cometbft/types/time"
 )
 
@@ -163,7 +162,7 @@ func TestVoteSignBytesTestVectors(t *testing.T) {
 
 func TestVoteProposalNotEq(t *testing.T) {
 	cv := CanonicalizeVote("", &cmtproto.Vote{Height: 1, Round: 1})
-	p := CanonicalizeProposal("", &cmtproto1.Proposal{Height: 1, Round: 1})
+	p := CanonicalizeProposal("", &cmtproto.Proposal{Height: 1, Round: 1})
 	vb, err := proto.Marshal(&cv)
 	require.NoError(t, err)
 	pb, err := proto.Marshal(&p)

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	cmtversion "github.com/cometbft/cometbft/proto/cometbft/version/v1"
+	cmtversion "github.com/cometbft/cometbft/api/cometbft/version/v1"
 	"github.com/cometbft/cometbft/version"
 	"github.com/stretchr/testify/require"
 )

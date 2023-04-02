@@ -23,9 +23,8 @@ import (
 	mempl "github.com/cometbft/cometbft/mempool"
 	"github.com/cometbft/cometbft/proxy"
 
+	cmtcons "github.com/cometbft/cometbft/api/cometbft/consensus"
 	"github.com/cometbft/cometbft/p2p"
-	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtcons1 "github.com/cometbft/cometbft/proto/cometbft/consensus/v1"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/store"
 	"github.com/cometbft/cometbft/types"
@@ -520,7 +519,7 @@ func sendProposalAndParts(
 	// proposal
 	peer.Send(p2p.Envelope{
 		ChannelID: DataChannel,
-		Message:   &cmtcons1.Proposal{Proposal: *proposal.ToProto()},
+		Message:   &cmtcons.Proposal{Proposal: *proposal.ToProto()},
 	})
 
 	// parts
@@ -532,7 +531,7 @@ func sendProposalAndParts(
 		}
 		peer.Send(p2p.Envelope{
 			ChannelID: DataChannel,
-			Message: &cmtcons1.BlockPart{
+			Message: &cmtcons.BlockPart{
 				Height: height, // This tells peer that this part applies to us.
 				Round:  round,  // This tells peer that this part applies to us.
 				Part:   *pp,

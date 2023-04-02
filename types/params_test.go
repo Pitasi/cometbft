@@ -9,9 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
-	cmtproto2 "github.com/cometbft/cometbft/proto/cometbft/types/v2"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 )
 
 var (
@@ -120,16 +118,16 @@ func TestConsensusParamsUpdate(t *testing.T) {
 		{
 			makeParams(1, 2, 3, 0, valEd25519, 0),
 			&cmtproto.ConsensusParams{
-				Block: &cmtproto2.BlockParams{
+				Block: &cmtproto.BlockParams{
 					MaxBytes: 100,
 					MaxGas:   200,
 				},
-				Evidence: &cmtproto1.EvidenceParams{
+				Evidence: &cmtproto.EvidenceParams{
 					MaxAgeNumBlocks: 300,
 					MaxAgeDuration:  time.Duration(300),
 					MaxBytes:        50,
 				},
-				Validator: &cmtproto1.ValidatorParams{
+				Validator: &cmtproto.ValidatorParams{
 					PubKeyTypes: valSecp256k1,
 				},
 			},
@@ -148,7 +146,7 @@ func TestConsensusParamsUpdate_AppVersion(t *testing.T) {
 	assert.EqualValues(t, 0, params.Version.App)
 
 	updated := params.Update(
-		&cmtproto.ConsensusParams{Version: &cmtproto2.VersionParams{App: 1}})
+		&cmtproto.ConsensusParams{Version: &cmtproto.VersionParams{App: 1}})
 
 	assert.EqualValues(t, 1, updated.Version.App)
 }

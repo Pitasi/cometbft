@@ -14,8 +14,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
 	"github.com/cometbft/cometbft/p2p"
-	cmtcons "github.com/cometbft/cometbft/proto/cometbft/consensus/v2"
-	cmtcons1 "github.com/cometbft/cometbft/proto/cometbft/consensus/v1"
+	cmtcons "github.com/cometbft/cometbft/api/cometbft/consensus"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/types"
 	cmttime "github.com/cometbft/cometbft/types/time"
@@ -291,7 +290,7 @@ func (conR *Reactor) Receive(e p2p.Envelope) {
 			default:
 				panic("Bad VoteSetBitsMessage field Type. Forgot to add a check in ValidateBasic?")
 			}
-			eMsg := &cmtcons1.VoteSetBits{
+			eMsg := &cmtcons.VoteSetBits{
 				Height:  msg.Height,
 				Round:   msg.Round,
 				Type:    msg.Type,
@@ -443,7 +442,7 @@ func (conR *Reactor) broadcastNewRoundStepMessage(rs *cstypes.RoundState) {
 
 func (conR *Reactor) broadcastNewValidBlockMessage(rs *cstypes.RoundState) {
 	psh := rs.ProposalBlockParts.Header()
-	csMsg := &cmtcons1.NewValidBlock{
+	csMsg := &cmtcons.NewValidBlock{
 		Height:             rs.Height,
 		Round:              rs.Round,
 		BlockPartSetHeader: psh.ToProto(),
@@ -458,7 +457,7 @@ func (conR *Reactor) broadcastNewValidBlockMessage(rs *cstypes.RoundState) {
 
 // Broadcasts HasVoteMessage to peers that care.
 func (conR *Reactor) broadcastHasVoteMessage(vote *types.Vote) {
-	msg := &cmtcons1.HasVote{
+	msg := &cmtcons.HasVote{
 		Height: vote.Height,
 		Round:  vote.Round,
 		Type:   vote.Type,
@@ -492,8 +491,8 @@ func (conR *Reactor) broadcastHasVoteMessage(vote *types.Vote) {
 	*/
 }
 
-func makeRoundStepMessage(rs *cstypes.RoundState) (nrsMsg *cmtcons1.NewRoundStep) {
-	nrsMsg = &cmtcons1.NewRoundStep{
+func makeRoundStepMessage(rs *cstypes.RoundState) (nrsMsg *cmtcons.NewRoundStep) {
+	nrsMsg = &cmtcons.NewRoundStep{
 		Height:                rs.Height,
 		Round:                 rs.Round,
 		Step:                  uint32(rs.Step),
@@ -555,7 +554,7 @@ OUTER_LOOP:
 				logger.Debug("Sending block part", "height", prs.Height, "round", prs.Round)
 				if peer.Send(p2p.Envelope{
 					ChannelID: DataChannel,
-					Message: &cmtcons1.BlockPart{
+					Message: &cmtcons.BlockPart{
 						Height: rs.Height, // This tells peer that this part applies to us.
 						Round:  rs.Round,  // This tells peer that this part applies to us.
 						Part:   *parts,
@@ -609,7 +608,7 @@ OUTER_LOOP:
 				logger.Debug("Sending proposal", "height", prs.Height, "round", prs.Round)
 				if peer.Send(p2p.Envelope{
 					ChannelID: DataChannel,
-					Message:   &cmtcons1.Proposal{Proposal: *rs.Proposal.ToProto()},
+					Message:   &cmtcons.Proposal{Proposal: *rs.Proposal.ToProto()},
 				}) {
 					// NOTE[ZM]: A peer might have received different proposal msg so this Proposal msg will be rejected!
 					ps.SetHasProposal(rs.Proposal)
@@ -623,7 +622,7 @@ OUTER_LOOP:
 				logger.Debug("Sending POL", "height", prs.Height, "round", prs.Round)
 				peer.Send(p2p.Envelope{
 					ChannelID: DataChannel,
-					Message: &cmtcons1.ProposalPOL{
+					Message: &cmtcons.ProposalPOL{
 						Height:           rs.Height,
 						ProposalPolRound: rs.Proposal.POLRound,
 						ProposalPol:      *rs.Votes.Prevotes(rs.Proposal.POLRound).BitArray().ToProto(),
@@ -673,7 +672,7 @@ func (conR *Reactor) gossipDataForCatchup(logger log.Logger, rs *cstypes.RoundSt
 		}
 		if peer.Send(p2p.Envelope{
 			ChannelID: DataChannel,
-			Message: &cmtcons1.BlockPart{
+			Message: &cmtcons.BlockPart{
 				Height: prs.Height, // Not our height, so it doesn't matter.
 				Round:  prs.Round,  // Not our height, so it doesn't matter.
 				Part:   *pp,
@@ -849,7 +848,7 @@ OUTER_LOOP:
 
 					peer.TrySend(p2p.Envelope{
 						ChannelID: StateChannel,
-						Message: &cmtcons1.VoteSetMaj23{
+						Message: &cmtcons.VoteSetMaj23{
 							Height:  prs.Height,
 							Round:   prs.Round,
 							Type:    types.SignedMsgType_PREVOTE,
@@ -869,7 +868,7 @@ OUTER_LOOP:
 				if maj23, ok := rs.Votes.Precommits(prs.Round).TwoThirdsMajority(); ok {
 					peer.TrySend(p2p.Envelope{
 						ChannelID: StateChannel,
-						Message: &cmtcons1.VoteSetMaj23{
+						Message: &cmtcons.VoteSetMaj23{
 							Height:  prs.Height,
 							Round:   prs.Round,
 							Type:    types.SignedMsgType_PRECOMMIT,
@@ -890,7 +889,7 @@ OUTER_LOOP:
 
 					peer.TrySend(p2p.Envelope{
 						ChannelID: StateChannel,
-						Message: &cmtcons1.VoteSetMaj23{
+						Message: &cmtcons.VoteSetMaj23{
 							Height:  prs.Height,
 							Round:   prs.ProposalPOLRound,
 							Type:    types.SignedMsgType_PREVOTE,
@@ -913,7 +912,7 @@ OUTER_LOOP:
 				if commit := conR.conS.LoadCommit(prs.Height); commit != nil {
 					peer.TrySend(p2p.Envelope{
 						ChannelID: StateChannel,
-						Message: &cmtcons1.VoteSetMaj23{
+						Message: &cmtcons.VoteSetMaj23{
 							Height:  prs.Height,
 							Round:   commit.Round,
 							Type:    types.SignedMsgType_PRECOMMIT,

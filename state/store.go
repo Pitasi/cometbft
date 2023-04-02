@@ -9,11 +9,10 @@ import (
 	dbm "github.com/cometbft/cometbft-db"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	cmtstate "github.com/cometbft/cometbft/api/cometbft/state"
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	cmtmath "github.com/cometbft/cometbft/libs/math"
 	cmtos "github.com/cometbft/cometbft/libs/os"
-	cmtstate "github.com/cometbft/cometbft/proto/cometbft/state/v3"
-	cmtstate1 "github.com/cometbft/cometbft/proto/cometbft/state/v1"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -550,7 +549,7 @@ func lastStoredHeightFor(height, lastHeightChanged int64) int64 {
 }
 
 // CONTRACT: Returned ValidatorsInfo can be mutated.
-func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate1.ValidatorsInfo, error) {
+func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {
 	buf, err := db.Get(calcValidatorsKey(height))
 	if err != nil {
 		return nil, err
@@ -560,7 +559,7 @@ func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate1.ValidatorsInfo, err
 		return nil, errors.New("value retrieved from db is empty")
 	}
 
-	v := new(cmtstate1.ValidatorsInfo)
+	v := new(cmtstate.ValidatorsInfo)
 	err = v.Unmarshal(buf)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
@@ -581,7 +580,7 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than ValidatorsInfo height")
 	}
-	valInfo := &cmtstate1.ValidatorsInfo{
+	valInfo := &cmtstate.ValidatorsInfo{
 		LastHeightChanged: lastHeightChanged,
 	}
 	// Only persist validator set if it was updated or checkpoint height (see

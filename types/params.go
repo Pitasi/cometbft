@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/crypto/secp256k1"
 	"github.com/cometbft/cometbft/crypto/tmhash"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
-	cmtproto2 "github.com/cometbft/cometbft/proto/cometbft/types/v2"
 )
 
 const (
@@ -230,7 +228,7 @@ func (params ConsensusParams) ValidateUpdate(updated *cmtproto.ConsensusParams, 
 func (params ConsensusParams) Hash() []byte {
 	hasher := tmhash.New()
 
-	hp := cmtproto1.HashedParams{
+	hp := cmtproto.HashedParams{
 		BlockMaxBytes: params.Block.MaxBytes,
 		BlockMaxGas:   params.Block.MaxGas,
 	}
@@ -282,19 +280,19 @@ func (params ConsensusParams) Update(params2 *cmtproto.ConsensusParams) Consensu
 
 func (params *ConsensusParams) ToProto() cmtproto.ConsensusParams {
 	return cmtproto.ConsensusParams{
-		Block: &cmtproto2.BlockParams{
+		Block: &cmtproto.BlockParams{
 			MaxBytes: params.Block.MaxBytes,
 			MaxGas:   params.Block.MaxGas,
 		},
-		Evidence: &cmtproto1.EvidenceParams{
+		Evidence: &cmtproto.EvidenceParams{
 			MaxAgeNumBlocks: params.Evidence.MaxAgeNumBlocks,
 			MaxAgeDuration:  params.Evidence.MaxAgeDuration,
 			MaxBytes:        params.Evidence.MaxBytes,
 		},
-		Validator: &cmtproto1.ValidatorParams{
+		Validator: &cmtproto.ValidatorParams{
 			PubKeyTypes: params.Validator.PubKeyTypes,
 		},
-		Version: &cmtproto2.VersionParams{
+		Version: &cmtproto.VersionParams{
 			App: params.Version.App,
 		},
 		Abci: &cmtproto.ABCIParams{

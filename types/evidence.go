@@ -10,12 +10,11 @@ import (
 	"time"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	"github.com/cometbft/cometbft/crypto/merkle"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	cmtrand "github.com/cometbft/cometbft/libs/rand"
-	cmtproto "github.com/cometbft/cometbft/proto/cometbft/types/v3"
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
 )
 
 // Evidence represents any provable malicious activity by a validator.
@@ -387,13 +386,13 @@ func (l *LightClientAttackEvidence) ValidateBasic() error {
 }
 
 // ToProto encodes LightClientAttackEvidence to protobuf
-func (l *LightClientAttackEvidence) ToProto() (*cmtproto1.LightClientAttackEvidence, error) {
+func (l *LightClientAttackEvidence) ToProto() (*cmtproto.LightClientAttackEvidence, error) {
 	conflictingBlock, err := l.ConflictingBlock.ToProto()
 	if err != nil {
 		return nil, err
 	}
 
-	byzVals := make([]*cmtproto1.Validator, len(l.ByzantineValidators))
+	byzVals := make([]*cmtproto.Validator, len(l.ByzantineValidators))
 	for idx, val := range l.ByzantineValidators {
 		valpb, err := val.ToProto()
 		if err != nil {
@@ -402,7 +401,7 @@ func (l *LightClientAttackEvidence) ToProto() (*cmtproto1.LightClientAttackEvide
 		byzVals[idx] = valpb
 	}
 
-	return &cmtproto1.LightClientAttackEvidence{
+	return &cmtproto.LightClientAttackEvidence{
 		ConflictingBlock:    conflictingBlock,
 		CommonHeight:        l.CommonHeight,
 		ByzantineValidators: byzVals,
@@ -412,7 +411,7 @@ func (l *LightClientAttackEvidence) ToProto() (*cmtproto1.LightClientAttackEvide
 }
 
 // LightClientAttackEvidenceFromProto decodes protobuf
-func LightClientAttackEvidenceFromProto(lpb *cmtproto1.LightClientAttackEvidence) (*LightClientAttackEvidence, error) {
+func LightClientAttackEvidenceFromProto(lpb *cmtproto.LightClientAttackEvidence) (*LightClientAttackEvidence, error) {
 	if lpb == nil {
 		return nil, errors.New("empty light client attack evidence")
 	}

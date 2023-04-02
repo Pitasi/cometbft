@@ -3,8 +3,7 @@ package types
 import (
 	"time"
 
-	cmtproto1 "github.com/cometbft/cometbft/proto/cometbft/types/v1"
-	cmtproto3 "github.com/cometbft/cometbft/proto/cometbft/types/v3"
+	cmtproto "github.com/cometbft/cometbft/api/cometbft/types"
 	cmttime "github.com/cometbft/cometbft/types/time"
 )
 
@@ -16,16 +15,16 @@ const TimeFormat = time.RFC3339Nano
 //-----------------------------------
 // Canonicalize the structs
 
-func CanonicalizeBlockID(bid cmtproto1.BlockID) *cmtproto1.CanonicalBlockID {
+func CanonicalizeBlockID(bid cmtproto.BlockID) *cmtproto.CanonicalBlockID {
 	rbid, err := BlockIDFromProto(&bid)
 	if err != nil {
 		panic(err)
 	}
-	var cbid *cmtproto1.CanonicalBlockID
+	var cbid *cmtproto.CanonicalBlockID
 	if rbid == nil || rbid.IsZero() {
 		cbid = nil
 	} else {
-		cbid = &cmtproto1.CanonicalBlockID{
+		cbid = &cmtproto.CanonicalBlockID{
 			Hash:          bid.Hash,
 			PartSetHeader: CanonicalizePartSetHeader(bid.PartSetHeader),
 		}
@@ -35,13 +34,13 @@ func CanonicalizeBlockID(bid cmtproto1.BlockID) *cmtproto1.CanonicalBlockID {
 }
 
 // CanonicalizeVote transforms the given PartSetHeader to a CanonicalPartSetHeader.
-func CanonicalizePartSetHeader(psh cmtproto1.PartSetHeader) cmtproto1.CanonicalPartSetHeader {
-	return cmtproto1.CanonicalPartSetHeader(psh)
+func CanonicalizePartSetHeader(psh cmtproto.PartSetHeader) cmtproto.CanonicalPartSetHeader {
+	return cmtproto.CanonicalPartSetHeader(psh)
 }
 
 // CanonicalizeVote transforms the given Proposal to a CanonicalProposal.
-func CanonicalizeProposal(chainID string, proposal *cmtproto1.Proposal) cmtproto1.CanonicalProposal {
-	return cmtproto1.CanonicalProposal{
+func CanonicalizeProposal(chainID string, proposal *cmtproto.Proposal) cmtproto.CanonicalProposal {
+	return cmtproto.CanonicalProposal{
 		Type:      SignedMsgType_PROPOSAL,
 		Height:    proposal.Height,       // encoded as sfixed64
 		Round:     int64(proposal.Round), // encoded as sfixed64
@@ -55,8 +54,8 @@ func CanonicalizeProposal(chainID string, proposal *cmtproto1.Proposal) cmtproto
 // CanonicalizeVote transforms the given Vote to a CanonicalVote, which does
 // not contain ValidatorIndex and ValidatorAddress fields, or any fields
 // relating to vote extensions.
-func CanonicalizeVote(chainID string, vote *cmtproto3.Vote) cmtproto1.CanonicalVote {
-	return cmtproto1.CanonicalVote{
+func CanonicalizeVote(chainID string, vote *cmtproto.Vote) cmtproto.CanonicalVote {
+	return cmtproto.CanonicalVote{
 		Type:      vote.Type,
 		Height:    vote.Height,       // encoded as sfixed64
 		Round:     int64(vote.Round), // encoded as sfixed64
@@ -69,8 +68,8 @@ func CanonicalizeVote(chainID string, vote *cmtproto3.Vote) cmtproto1.CanonicalV
 // CanonicalizeVoteExtension extracts the vote extension from the given vote
 // and constructs a CanonicalizeVoteExtension struct, whose representation in
 // bytes is what is signed in order to produce the vote extension's signature.
-func CanonicalizeVoteExtension(chainID string, vote *cmtproto3.Vote) cmtproto3.CanonicalVoteExtension {
-	return cmtproto3.CanonicalVoteExtension{
+func CanonicalizeVoteExtension(chainID string, vote *cmtproto.Vote) cmtproto.CanonicalVoteExtension {
+	return cmtproto.CanonicalVoteExtension{
 		Extension: vote.Extension,
 		Height:    vote.Height,
 		Round:     int64(vote.Round),

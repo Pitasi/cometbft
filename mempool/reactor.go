@@ -9,7 +9,7 @@ import (
 	"github.com/cometbft/cometbft/libs/clist"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cometbft/cometbft/p2p"
-	protomem "github.com/cometbft/cometbft/proto/cometbft/mempool/v1"
+	protomem "github.com/cometbft/cometbft/api/cometbft/mempool/v1"
 	"github.com/cometbft/cometbft/types"
 )
 

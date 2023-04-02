@@ -2,11 +2,12 @@ package types
 
 import (
 	"encoding/json"
+
 	"github.com/cosmos/gogoproto/grpc"
 
-	"github.com/cometbft/cometbft/abci/types/v1"
-	"github.com/cometbft/cometbft/abci/types/v2"
-	"github.com/cometbft/cometbft/abci/types/v3"
+	v1 "github.com/cometbft/cometbft/api/cometbft/abci/v1"
+	v2 "github.com/cometbft/cometbft/api/cometbft/abci/v2"
+	v3 "github.com/cometbft/cometbft/api/cometbft/abci/v3"
 )
 
 type Request = v3.Request
@@ -157,7 +158,7 @@ type ResponseVerifyVoteExtension_VerifyStatus = v3.ResponseVerifyVoteExtension_V
 const (
 	ResponseVerifyVoteExtension_UNKNOWN ResponseVerifyVoteExtension_VerifyStatus = v3.ResponseVerifyVoteExtension_UNKNOWN
 	ResponseVerifyVoteExtension_ACCEPT  ResponseVerifyVoteExtension_VerifyStatus = v3.ResponseVerifyVoteExtension_ACCEPT
-	ResponseVerifyVoteExtension_REJECT 	ResponseVerifyVoteExtension_VerifyStatus = v3.ResponseVerifyVoteExtension_REJECT
+	ResponseVerifyVoteExtension_REJECT  ResponseVerifyVoteExtension_VerifyStatus = v3.ResponseVerifyVoteExtension_REJECT
 )
 
 const (

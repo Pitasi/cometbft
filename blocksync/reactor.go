@@ -7,8 +7,7 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cometbft/cometbft/p2p"
-	bcproto "github.com/cometbft/cometbft/proto/cometbft/blocksync/v2"
-	bcproto1 "github.com/cometbft/cometbft/proto/cometbft/blocksync/v1"
+	bcproto "github.com/cometbft/cometbft/api/cometbft/blocksync"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/store"
 	"github.com/cometbft/cometbft/types"
@@ -158,7 +157,7 @@ func (bcR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 func (bcR *Reactor) AddPeer(peer p2p.Peer) {
 	peer.Send(p2p.Envelope{
 		ChannelID: BlocksyncChannel,
-		Message: &bcproto1.StatusResponse{
+		Message: &bcproto.StatusResponse{
 			Base:   bcR.store.Base(),
 			Height: bcR.store.Height(),
 		},
@@ -176,7 +175,7 @@ func (bcR *Reactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 
 // respondToPeer loads a block and sends it to the requesting peer,
 // if we have it. Otherwise, we'll respond saying we don't have it.
-func (bcR *Reactor) respondToPeer(msg *bcproto1.BlockRequest,
+func (bcR *Reactor) respondToPeer(msg *bcproto.BlockRequest,
 	src p2p.Peer) (queued bool) {
 
 	block := bcR.store.LoadBlock(msg.Height)
@@ -184,7 +183,7 @@ func (bcR *Reactor) respondToPeer(msg *bcproto1.BlockRequest,
 		bcR.Logger.Info("Peer asking for a block we don't have", "src", src, "height", msg.Height)
 		return src.TrySend(p2p.Envelope{
 			ChannelID: BlocksyncChannel,
-			Message:   &bcproto1.NoBlockResponse{Height: msg.Height},
+			Message:   &bcproto.NoBlockResponse{Height: msg.Height},
 		})
 	}
 
@@ -228,7 +227,7 @@ func (bcR *Reactor) Receive(e p2p.Envelope) {
 	bcR.Logger.Debug("Receive", "e.Src", e.Src, "chID", e.ChannelID, "msg", e.Message)
 
 	switch msg := e.Message.(type) {
-	case *bcproto1.BlockRequest:
+	case *bcproto.BlockRequest:
 		bcR.respondToPeer(msg, e.Src)
 	case *bcproto.BlockResponse:
 		bi, err := types.BlockFromProto(msg.Block)
@@ -251,19 +250,19 @@ func (bcR *Reactor) Receive(e p2p.Envelope) {
 		if err := bcR.pool.AddBlock(e.Src.ID(), bi, extCommit, msg.Block.Size()); err != nil {
 			bcR.Logger.Error("failed to add block", "err", err)
 		}
-	case *bcproto1.StatusRequest:
+	case *bcproto.StatusRequest:
 		// Send peer our state.
 		e.Src.TrySend(p2p.Envelope{
 			ChannelID: BlocksyncChannel,
-			Message: &bcproto1.StatusResponse{
+			Message: &bcproto.StatusResponse{
 				Height: bcR.store.Height(),
 				Base:   bcR.store.Base(),
 			},
 		})
-	case *bcproto1.StatusResponse:
+	case *bcproto.StatusResponse:
 		// Got a peer status. Unverified.
 		bcR.pool.SetPeerRange(e.Src.ID(), msg.Base, msg.Height)
-	case *bcproto1.NoBlockResponse:
+	case *bcproto.NoBlockResponse:
 		bcR.Logger.Debug("Peer does not have requested block", "peer", e.Src, "height", msg.Height)
 	default:
 		bcR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
@@ -314,7 +313,7 @@ func (bcR *Reactor) poolRoutine(stateSynced bool) {
 				}
 				queued := peer.TrySend(p2p.Envelope{
 					ChannelID: BlocksyncChannel,
-					Message:   &bcproto1.BlockRequest{Height: request.Height},
+					Message:   &bcproto.BlockRequest{Height: request.Height},
 				})
 				if !queued {
 					bcR.Logger.Debug("Send queue is full, drop block request", "peer", peer.ID(), "height", request.Height)
@@ -525,6 +524,6 @@ FOR_LOOP:
 func (bcR *Reactor) BroadcastStatusRequest() {
 	bcR.Switch.Broadcast(p2p.Envelope{
 		ChannelID: BlocksyncChannel,
-		Message:   &bcproto1.StatusRequest{},
+		Message:   &bcproto.StatusRequest{},
 	})
 }
